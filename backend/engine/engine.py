@@ -13,20 +13,20 @@ class Engine:
         sentences_vectors = self.__encode_text(all_sentences)
         index = self.__create_index(sentences_vectors)
         vector_of_sentence_to_search = self.__encode_text(sentence_to_check)
-        similar_results, ids = self.__search_similarity(index, vector_of_sentence_to_search, sentences_vectors, int(number_of_results))
+        similar_results, ids = self.__search_similarity(
+            index, vector_of_sentence_to_search, sentences_vectors, int(number_of_results))
         result = self.__calculate_similarity(vector_of_sentence_to_search, similar_results)
 
         return ids, result
 
     @staticmethod
-    def prepare_results(ids, result_data, calculation_result):
+    def prepare_results(ids, prepared_results, calculation_result):
         counter = 0
         name = []
         res = []
 
         for elem in ids[0]:
-            # print('Name: ' + str(result_data[elem][1]) + "; Result: " + str(calculation_result[0][counter]))
-            name.append(result_data[elem][1])
+            name.append(prepared_results[elem]['name'])
             res.append(calculation_result[0][counter])
             counter += 1
 
@@ -38,7 +38,6 @@ class Engine:
     @staticmethod
     def __create_index(vectors_of_all_sentences):
         num_of_sentences = vectors_of_all_sentences.shape[0]
-        # cells = 0
 
         if num_of_sentences < 50:
             cells = num_of_sentences
@@ -57,20 +56,17 @@ class Engine:
     @staticmethod
     def __search_similarity(index, vector_of_sentence_to_search, vectors_of_all_sentences, number_of_results):
         print(vector_of_sentence_to_search.shape)
-        D, I = index.search(vector_of_sentence_to_search, number_of_results)
-
-        print(I)
-        print(D)
+        distances, indexes = index.search(vector_of_sentence_to_search, number_of_results)
 
         counter = 0
-        ids = I[0]
-        similar_results = np.zeros((len(I[0]), vector_of_sentence_to_search.shape[1]))
+        ids = indexes[0]
+        similar_results = np.zeros((len(indexes[0]), vector_of_sentence_to_search.shape[1]))
 
         for i in ids:
             similar_results[counter] = vectors_of_all_sentences[i]
             counter += 1
 
-        return similar_results, I
+        return similar_results, indexes
 
     @staticmethod
     def __calculate_similarity(vector_of_sentence_to_search, vectors_of_all_sentences):

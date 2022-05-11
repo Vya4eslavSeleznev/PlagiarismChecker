@@ -7,8 +7,9 @@ from engine import engine
 
 app = Flask(__name__)
 
+
 pars = "parser"
-db = "database"
+postgres = "database"
 eng = "engine"
 
 
@@ -19,13 +20,13 @@ def bad_request(element, message):
 
 @app.before_first_request
 def initialization():
+    global postgres
     global pars
-    global db
     global eng
 
+    postgres = database.Database(app)
     pars = file_parser.Parser()
-    db = database.Database()
-    # eng = engine.Engine()
+    eng = engine.Engine()
 
 
 @app.route("/get_results", methods=["POST"])
@@ -39,59 +40,50 @@ def get_results():
         bad_request(text_to_check, 'Missing text to check!')
         bad_request(number_of_results, 'Missing number of results!')
 
-        all_data_from_db = db.get_all_data()
-        all_sentences = db.get_all_sentences(all_data_from_db)
+        all_data_from_db = postgres.get_all_data()
+        all_sentences = postgres.get_all_sentences(all_data_from_db)
         ids, calculation_result = eng.start(all_sentences, text_to_check, number_of_results)
-        name_of_file, res = eng.prepare_results(ids, all_data_from_db, calculation_result)
+        prepared_results = postgres.result_to_dict(all_data_from_db)
+        name_of_file, res = eng.prepare_results(ids, prepared_results, calculation_result)
 
         response = {
             "name": name_of_file,
             "result": res
         }
 
-        resp = make_response(jsonify(response), 200)
-        return resp
+        return make_response(jsonify(response), 200)
     else:
-        resp = make_response("JSON not found", 400)
-        return resp
+        return make_response("JSON not found", 400)
 
 
 @app.route("/insert_data", methods=["POST"])
 def insert_data_into_db():
     if request.is_json:
         req = request.get_json()
-
         url = [req.get("url")]
-
         bad_request(url, 'Missing url!')
 
         content, name = pars.get_data(url[0])
-        db.insert_data_for_search(name, content)
-        resp = make_response("OK", 200)
-        return resp
+        postgres.insert_data_for_search(name, content)
+
+        return make_response("OK", 200)
 
     else:
-        resp = make_response("JSON not found", 400)
-        return resp
-
-
-@app.route("/get_data", methods=["GET"])
-def get_data_from_db():
-    all_data_from_db = db.get_all_data()
-
-    response = {
-        "data": all_data_from_db
-    }
-
-    resp = make_response(jsonify(response), 200)
-    return resp
+        return make_response("JSON not found", 400)
 
 
 @app.route("/delete_data", methods=["DELETE"])
 def delete_data_from_db():
-    db.delete_data()
-    resp = make_response("OK", 200)
-    return resp
+    postgres.delete_data()
+    return make_response("OK", 200)
+
+
+@app.route("/get_data", methods=["GET"])
+def get_data_from_db():
+    all_data_from_db = postgres.get_all_data()
+    list_to_return = postgres.result_to_dict(all_data_from_db)
+
+    return make_response(jsonify(list_to_return), 200)
 
 
 @app.route("/registration", methods=["POST"])
@@ -107,10 +99,8 @@ def user_registration():
         bad_request(login, 'Missing login!')
         bad_request(password, 'Missing password!')
 
-        db.add_user(name, login, password)
-        resp = make_response("OK", 200)
-        return resp
+        postgres.add_user(name, login, password)
+        return make_response("OK", 200)
 
     else:
-        resp = make_response("JSON not found", 400)
-        return resp
+        return make_response("JSON not found", 400)

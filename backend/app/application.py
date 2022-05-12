@@ -1,8 +1,11 @@
 from flask import Flask, request, make_response, jsonify
+from sqlalchemy.exc import IntegrityError
+import bcrypt
 
 from db import database
 from file_parser import file_parser
 from engine import engine
+from model import models
 
 
 app = Flask(__name__)
@@ -26,7 +29,7 @@ def initialization():
 
     postgres = database.Database(app)
     pars = file_parser.Parser()
-    eng = engine.Engine()
+    # eng = engine.Engine()
 
 
 @app.route("/get_results", methods=["POST"])
@@ -86,8 +89,8 @@ def get_data_from_db():
     return make_response(jsonify(list_to_return), 200)
 
 
-@app.route("/registration", methods=["POST"])
-def user_registration():
+@app.route("/register", methods=["POST"])
+def register():
     if request.is_json:
         req = request.get_json()
 
@@ -99,8 +102,42 @@ def user_registration():
         bad_request(login, 'Missing login!')
         bad_request(password, 'Missing password!')
 
-        postgres.add_user(name, login, password)
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        try:
+            postgres.add_user(name, login, hashed_password.decode('utf8'))
+        except IntegrityError:
+            postgres.rollback()
+            return make_response("User Already Exists", 400)
+
         return make_response("OK", 200)
 
     else:
         return make_response("JSON not found", 400)
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    if request.is_json:
+        req = request.get_json()
+
+        login = req.get("login")
+        password = req.get("password")
+
+        bad_request(login, 'Missing login!')
+        bad_request(password, 'Missing password!')
+
+        customer = postgres.get_user_by_login(login)
+
+        if not customer:
+            return 'User Not Found!', 404
+
+        if bcrypt.checkpw(password.encode('utf-8'), customer.password.encode('utf8')):
+            return make_response("OK", 200)
+        else:
+            return make_response('Invalid Login Info!', 400)
+
+    else:
+        return make_response("JSON not found", 400)
+
+

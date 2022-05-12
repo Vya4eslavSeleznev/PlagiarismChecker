@@ -33,6 +33,12 @@ class Database:
         self.db.session.add(customer)
         self.db.session.commit()
 
+    def get_user_by_login(self, login):
+        return self.db.session.query(models.Customer).filter(models.Customer.login == login).first()
+
+    def rollback(self):
+        self.db.session.rollback()
+
     @staticmethod
     def get_all_sentences(result_data):
         all_sentences = []

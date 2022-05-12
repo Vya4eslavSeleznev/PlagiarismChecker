@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, Text, UniqueConstraint
 
 Base = declarative_base()
 
@@ -7,9 +7,9 @@ Base = declarative_base()
 class Customer(Base):
     __tablename__ = 'customer'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    login = Column(String)
-    password = Column(String)
+    name = Column(Text, nullable=False)
+    login = Column(Text, unique=True, nullable=False)
+    password = Column(Text, nullable=False)
 
     def __init__(self, name, login, password):
         self.name = name
@@ -24,8 +24,8 @@ class Customer(Base):
 class Data(Base):
     __tablename__ = 'data'
     id = Column(Integer, primary_key=True)
-    name = Column(Text)
-    content = Column(Text)
+    name = Column(Text, unique=True, nullable=False)
+    content = Column(Text, nullable=False)
 
     def __init__(self, name, content):
         self.name = name

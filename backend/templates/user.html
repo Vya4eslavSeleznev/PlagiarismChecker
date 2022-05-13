@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/user.css')}}">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='js/user.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='js/particles.js')}}" defer></script>
+</head>
+<body id="particles-js"></body>
+<body>
+    <h1>Plagiarism Checker App</h1>
+
+    <div class="menuContainer" onclick="myFunction(this)">
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
+    </div>
+
+  <div class="dropdown">
+    <div id="myDropdown" class="dropdown-content">
+      <a href="#logOut">Log Out</a>
+    </div>
+  </div>
+
+    <div class="container">
+        <form id="plagiarismCheckerForm" class="box">
+            <div class="upload-container">
+              <label id="fileLabel">Upload file</label>
+              <input type="file" id="fileUpload">
+              <input type="submit" value="Submit" class="submitBtn">
+            </div>
+             <div id="numOfElementsContainer">
+                <label for="sensitivity">Number of results: <span id="numOfResults">7</span></label>
+                <input type="range" id="numberSensitivity" name="sensitivity" min="0" max="10" value="7">
+            </div>
+            <h2>Results</h2>
+            <div id="similaritySensitivityContainer">
+                <label for="sensitivity">Sensitivity: <span id="sensitivityPercentage">80</span>%</label>
+                <input type="range" id="resultSensitivity" name="sensitivity" min="0" max="100" value="80">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                    <th scope="col" class="fileNameColumn">File name</th>
+                    <th scope="col" class="scoreColumn">Match Score</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTableBody"></tbody>
+            </table>
+        </form>
+    <div id="noResults">No results</div>
+  </div>
+</body>
+  </div>
+       <div class="footer">
+      <span>Made by Vya4eslav Seleznev</span>
+    </div>
+</html>

@@ -1,0 +1,25 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css')}}">
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="{{ url_for('static', filename='js/login.js')}}" defer></script>
+  <script src="{{ url_for('static', filename='js/particles.js')}}" defer></script>
+</head>
+<body id="particles-js"></body>
+<div class="animated bounceInDown">
+  <div class="container">
+    <form name="loginForm" class="box" onsubmit="return checkStuff()">
+      <h4>Plagiarism Checker App</span></h4>
+      <h5>Sign in to your account</h5>
+        <input type="text" name="login" placeholder="Login" autocomplete="off">
+        <i class="typcn typcn-eye" id="eye"></i>
+        <input type="password" name="password" placeholder="Password" id="pwd" autocomplete="off">
+        <input type="submit" value="Sign in" class="signInBtn">
+      </form>
+        <a href="#" class="dnthave">Don’t have an account? Sign up</a>
+  </div>
+       <div class="footer">
+      <span>Made by Vya4eslav Seleznev</span>
+    </div>
+</div>
+</html>

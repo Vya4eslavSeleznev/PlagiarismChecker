@@ -1,14 +1,13 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, render_template
 from sqlalchemy.exc import IntegrityError
 import bcrypt
 
 from db import database
 from file_parser import file_parser
 from engine import engine
-from model import models
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 
 pars = "parser"
@@ -141,3 +140,16 @@ def login():
         return make_response("JSON not found", 400)
 
 
+@app.route("/test")
+def index():
+    return render_template("login.html")
+
+
+@app.route("/test2")
+def index2():
+    return render_template("register.html")
+
+
+@app.route("/test3")
+def index3():
+    return render_template("user.html")

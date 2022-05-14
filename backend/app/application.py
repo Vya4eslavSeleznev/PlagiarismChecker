@@ -140,7 +140,7 @@ def login():
         return make_response("JSON not found", 400)
 
 
-@app.route("/test")
+@app.route("/")
 def index():
     return render_template("login.html")
 

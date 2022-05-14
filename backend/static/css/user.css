@@ -71,6 +71,7 @@ h1 span {
   height: 30px;
   transition: 0.3s;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 .box label[id="fileLabel"] {

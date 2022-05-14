@@ -64,24 +64,15 @@ body, html {
 
 .box input[type = "text"]:focus,.box input[type = "password"]:focus {
   border: 1px solid #79A6FE;
-
 }
 
- label input[type = "checkbox"] {
-  display: none; /* hide the default checkbox */
-}
-
-/* style the artificial checkbox */
-label span {
-  height: 13px;
-  width: 13px;
-  border: 2px solid #464d64;
-  border-radius: 2px;
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  float: left;
-  left: 7.5%;
+.validation-message {
+  color: red;
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -5%);
+  display: none;
 }
 
 .signUpBtn {

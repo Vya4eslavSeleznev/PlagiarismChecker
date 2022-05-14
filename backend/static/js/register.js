@@ -9,16 +9,16 @@
         if (isNotEmpty(name) && isNotEmpty(login) && isNotEmpty(password)) {
 
             fetch('/register', {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                method: "POST",
                 body: JSON.stringify({
                     name: name,
                     login: login,
                     password: password
                 })
-            })
+            }).then(handleErrors)
         }
     }
 
@@ -26,18 +26,38 @@
     button.addEventListener('click', onSignUp);
 })();
 
+function handleErrors(response) {
+    document.getElementById("validationMsg").style.display = "block";
+
+    if (response.status === 400) {
+        document.getElementById("validationMsg").innerHTML = 'The user already exists';
+        document.getElementById("validationMsg").style.color = 'red';
+    } else if (response.ok) {
+        document.getElementById("validationMsg").innerHTML = 'Successful';
+        document.getElementById("validationMsg").style.color = '#8BD17C';
+    }
+
+    return response;
+}
+
 function isNotEmpty(field) {
 
-    var fieldData = field.value;
-
-    if (fieldData == "" || fieldData == fieldData) {
-
-        field.className = "FieldError";
-        alert("Please correct the errors in order to continue.");
+    if (field.length == 0 || field == "") {
+        document.getElementById("validationMsg").style.display = "block";
         return false;
     } else {
-
-        field.className = "FieldOk";
-        return true; //Submits form
+        return true;
     }
+}
+
+const name = document.querySelector('#name');
+const login = document.querySelector('#login');
+const password = document.querySelector('#pwd');
+
+name.addEventListener('input', updateValue);
+login.addEventListener('input', updateValue);
+password.addEventListener('input', updateValue);
+
+function updateValue(e) {
+    document.getElementById("validationMsg").style.display = "none"
 }

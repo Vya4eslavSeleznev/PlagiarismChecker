@@ -195,3 +195,12 @@ label span {
 .footer .fa {
   color: #7f5feb;;
 }
+
+.validation-message {
+  color: red;
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -5%);
+  display: none;
+}

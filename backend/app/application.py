@@ -141,15 +141,15 @@ def login():
 
 
 @app.route("/")
-def index():
+def start_page():
     return render_template("login.html")
 
 
-@app.route("/test2")
-def index2():
+@app.route("/register")
+def register_page():
     return render_template("register.html")
 
 
-@app.route("/test3")
-def index3():
+@app.route("/user")
+def user_page():
     return render_template("user.html")

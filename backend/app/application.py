@@ -1,10 +1,12 @@
-from flask import Flask, request, make_response, jsonify, render_template
+from flask import Flask, request, make_response, jsonify, render_template, url_for, redirect, session
 from sqlalchemy.exc import IntegrityError
 import bcrypt
+from functools import wraps
 
 from db import database
 from file_parser import file_parser
 from engine import engine
+from auth.auth import Authentication
 
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -13,6 +15,24 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 pars = "parser"
 postgres = "database"
 eng = "engine"
+key = "vDRif,gr!99A""N8*~3NY#*AkihiXQ&"
+DEFAULT_SESSION_COOKIE_NAME = "session_id"
+
+
+def is_authenticated():
+    return DEFAULT_SESSION_COOKIE_NAME in request.cookies and \
+        request.cookies[DEFAULT_SESSION_COOKIE_NAME] == "123"
+
+
+def custom_login_required(function):
+    @wraps(function)
+    def decorator(*args, **kwargs):
+        if not is_authenticated():
+            return redirect(url_for('/'))
+
+        session.is_authenticated = True
+        return function(*args, **kwargs)
+    return decorator
 
 
 def bad_request(element, message):
@@ -32,6 +52,7 @@ def initialization():
 
 
 @app.route("/get_results", methods=["POST"])
+#@custom_login_required
 def get_results():
     file = request.files['file']
     number_of_results = request.form['number']
@@ -52,6 +73,7 @@ def get_results():
 
 
 @app.route("/insert_data", methods=["POST"])
+#@custom_login_required
 def insert_data_into_db():
     file = request.files['file']
     bad_request(file, 'Missing file!')
@@ -65,12 +87,14 @@ def insert_data_into_db():
 
 
 @app.route("/delete_data", methods=["DELETE"])
+#@custom_login_required
 def delete_data_from_db():
     postgres.delete_data()
     return make_response("OK", 200)
 
 
 @app.route("/get_data", methods=["GET"])
+#@custom_login_required
 def get_data_from_db():
     all_data_from_db = postgres.get_all_data()
     list_to_return = postgres.result_to_dict(all_data_from_db)
@@ -108,6 +132,9 @@ def register():
 @app.route("/login", methods=["POST"])
 def login():
     if request.is_json:
+
+        #if (request.cookies.get())
+
         req = request.get_json()
 
         login = req.get("login")
@@ -122,7 +149,13 @@ def login():
             return 'User Not Found!', 404
 
         if bcrypt.checkpw(password.encode('utf-8'), customer.password.encode('utf8')):
-            return make_response("OK", 200)
+            response = make_response("OK", 200)
+
+            response.set_cookie(DEFAULT_SESSION_COOKIE_NAME,
+                                value="123",
+                                httponly=True)
+
+            return response
         else:
             return make_response('Invalid Login Info!', 400)
 

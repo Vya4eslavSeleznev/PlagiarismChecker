@@ -29,7 +29,7 @@ class Database:
         return result
 
     def add_user(self, name, login, password):
-        customer = models.Customer(name, login, password)
+        customer = models.Customer(name, login, password, False)
         self.db.session.add(customer)
         self.db.session.commit()
 

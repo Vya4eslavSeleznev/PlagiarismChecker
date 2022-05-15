@@ -12,7 +12,7 @@ class Customer(Base):
     password = Column(Text, nullable=False)
     admin = Column(Boolean, nullable=False)
 
-    def __init__(self, name, login, password):
+    def __init__(self, name, login, password, admin):
         self.name = name
         self.login = login
         self.password = password

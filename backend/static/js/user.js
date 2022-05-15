@@ -1,3 +1,14 @@
+function myFunction(x) {
+  x.classList.toggle("change");
+
+  const dropDown = document.getElementById("myDropdown");
+
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function logOut() {
+    window.location = '/';
+}
 
 (() => {
     async function getResult(event) {
@@ -43,11 +54,6 @@
     button.addEventListener('click', getResult);
 })();
 
-function myFunction(x) {
-  x.classList.toggle("change");
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
 const rangeInputs = document.querySelectorAll('input[type="range"]')
 
 function handleInputChange(e) {
@@ -80,16 +86,3 @@ rangeInputs.forEach(input => {
 })
 
 document.getElementById('numberSensitivity').addEventListener('input', handleNumOfResultsInputChange)
-
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}

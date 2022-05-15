@@ -102,19 +102,6 @@ input[type=file]::file-selector-button {
   color: #a1a4ad;
 }
 
-#similaritySensitivityContainer {
-  display: none;
-}
-
-.box input[id="resultSensitivity"] {
-  margin-top: 30px;
-  //display: none;
-}
-
-.box input[id="numberSensitivity"] {
-  margin-top: 20px;
-}
-
 .box input[type="range"] {
   -webkit-appearance: none;
   margin-right: 15px;

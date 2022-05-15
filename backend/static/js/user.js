@@ -18,6 +18,7 @@
         const result = await response.json();
 
         const tbody = document.getElementById('resultsTableBody');
+        tbody.innerHTML = "";
 
         for(let res of result) {
             const tr = document.createElement('tr');
@@ -33,9 +34,6 @@
 
             tbody.appendChild(tr);
         }
-
-        const sensitivityContainer = document.getElementById('similaritySensitivityContainer');
-        sensitivityContainer.style['display'] = 'block';
 
         const table = document.getElementById('resultsTable');
         table.style['display'] = 'block';
@@ -72,7 +70,7 @@ function handleNumOfResultsInputChange(e) {
     target = document.getElementById('range')
   }
 
-  const numOfResults = document.getElementById('sensitivityPercentage');
+  const numOfResults = document.getElementById('numOfResults');
 
   numOfResults.innerText = target.value;
 }
@@ -81,7 +79,7 @@ rangeInputs.forEach(input => {
   input.addEventListener('input', handleInputChange)
 })
 
-document.getElementById('resultSensitivity').addEventListener('input', handleNumOfResultsInputChange)
+document.getElementById('numberSensitivity').addEventListener('input', handleNumOfResultsInputChange)
 
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {

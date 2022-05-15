@@ -12,7 +12,7 @@
 
         const response = await fetch('/get_results', {
             method: "POST",
-            body: formData,
+            body: formData
         });
 
         const result = await response.json();
@@ -27,7 +27,7 @@
             nameTd.innerText = res.name;
 
             const resultTd = document.createElement('td');
-            resultTd.innerText = res.result;
+            resultTd.innerText = (res.result * 100).toFixed(2) + '%';
 
             tr.appendChild(nameTd);
             tr.appendChild(resultTd);

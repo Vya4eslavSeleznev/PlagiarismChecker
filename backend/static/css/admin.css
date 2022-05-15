@@ -27,7 +27,7 @@ body, html {
   border-top: 10px solid #8BD17C;
   border-bottom: 10px solid #8BD17C;
   width: 800px;
-  height: 500px;
+  height: 650px;
   box-shadow: 1px 1px 108.8px 19.2px rgb(25,31,53);
 }
 
@@ -119,6 +119,7 @@ table {
   max-width: 100%;
   margin: auto;
   margin-top:15px;
+  margin-bottom: 20px;
 }
 
 table td, table th {
@@ -126,6 +127,13 @@ table td, table th {
   padding: 0.5rem;
   background-color: #1d243d;
   color: #a1a4ad;
+}
+
+.longText {
+  max-width: 380px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 table .fileNameColumn {
@@ -174,7 +182,7 @@ table .contentColumn {
     position: relative;
     left: 0;
     bottom: 0;
-    top: 575px;
+    top: 710px;
     width: 100%;
     color: #a1a4ad;
     font-size: 14px;

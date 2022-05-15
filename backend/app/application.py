@@ -53,18 +53,15 @@ def get_results():
 
 @app.route("/insert_data", methods=["POST"])
 def insert_data_into_db():
-    if request.is_json:
-        req = request.get_json()
-        url = [req.get("url")]
-        bad_request(url, 'Missing url!')
+    file = request.files['file']
+    bad_request(file, 'Missing file!')
 
-        content, name = pars.get_data(url[0])
-        postgres.insert_data_for_search(name, content)
+    content = pars.get_data(file)
+    name = file.filename
 
-        return make_response("OK", 200)
+    postgres.insert_data_for_search(name, content)
 
-    else:
-        return make_response("JSON not found", 400)
+    return make_response("OK", 200)
 
 
 @app.route("/delete_data", methods=["DELETE"])

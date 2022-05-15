@@ -28,34 +28,27 @@ def initialization():
 
     postgres = database.Database(app)
     pars = file_parser.Parser()
-    # eng = engine.Engine()
+    eng = engine.Engine()
 
 
 @app.route("/get_results", methods=["POST"])
 def get_results():
-    if request.is_json:
-        req = request.get_json()
+    file = request.files['file']
+    number_of_results = request.form['number']
 
-        text_to_check = [req.get("sentence")]
-        number_of_results = req.get("number")
+    bad_request(file, 'Missing file!')
+    bad_request(number_of_results, 'Missing number of results!')
 
-        bad_request(text_to_check, 'Missing text to check!')
-        bad_request(number_of_results, 'Missing number of results!')
+    text_to_check = pars.get_data(file)
 
-        all_data_from_db = postgres.get_all_data()
-        all_sentences = postgres.get_all_sentences(all_data_from_db)
-        ids, calculation_result = eng.start(all_sentences, text_to_check, number_of_results)
-        prepared_results = postgres.result_to_dict(all_data_from_db)
-        name_of_file, res = eng.prepare_results(ids, prepared_results, calculation_result)
+    all_data_from_db = postgres.get_all_data()
+    all_sentences = postgres.get_all_sentences(all_data_from_db)
 
-        response = {
-            "name": name_of_file,
-            "result": res
-        }
+    ids, calculation_result = eng.start(all_sentences, [text_to_check], number_of_results)
+    prepared_results = postgres.result_to_dict(all_data_from_db)
+    result = eng.prepare_results(ids, prepared_results, calculation_result)
 
-        return make_response(jsonify(response), 200)
-    else:
-        return make_response("JSON not found", 400)
+    return make_response(jsonify(result), 200)
 
 
 @app.route("/insert_data", methods=["POST"])
@@ -153,3 +146,8 @@ def register_page():
 @app.route("/user")
 def user_page():
     return render_template("user.html")
+
+
+@app.route("/admin")
+def admin_page():
+    return render_template("admin.html")

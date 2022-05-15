@@ -22,15 +22,16 @@ class Engine:
     @staticmethod
     def prepare_results(ids, prepared_results, calculation_result):
         counter = 0
-        name = []
-        res = []
+        result = []
 
         for elem in ids[0]:
-            name.append(prepared_results[elem]['name'])
-            res.append(calculation_result[0][counter])
+            result.append({
+                'name': prepared_results[elem]['name'],
+                'result': calculation_result[0][counter]
+            })
             counter += 1
 
-        return name, res
+        return result
 
     def __encode_text(self, sentences):
         return self.model.encode(sentences)

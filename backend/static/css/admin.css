@@ -27,7 +27,7 @@ body, html {
   border-top: 10px solid #8BD17C;
   border-bottom: 10px solid #8BD17C;
   width: 800px;
-  height: 650px;
+  height: 500px;
   box-shadow: 1px 1px 108.8px 19.2px rgb(25,31,53);
 }
 
@@ -47,7 +47,6 @@ h1 span {
   color: #a1a4ad;
   font-size: 18px;
   margin-top:30px;
-  display: none;
 }
 
 .box h2 span {
@@ -66,6 +65,18 @@ h1 span {
 .submitBtn {
   border: 0;
   background: #7f5feb;
+  color: #a1a4ad;
+  border-radius: 100px;
+  width: 100px;
+  height: 30px;
+  transition: 0.3s;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.clearBtn {
+  border: 0;
+  background: #C72300;
   color: #a1a4ad;
   border-radius: 100px;
   width: 100px;
@@ -98,50 +109,8 @@ input[type=file]::file-selector-button {
   margin-left: 55px;
 }
 
-.box label[for="sensitivity"] {
-  color: #a1a4ad;
-}
-
-#similaritySensitivityContainer {
+#numOfResults {
   display: none;
-}
-
-.box input[id="resultSensitivity"] {
-  margin-top: 30px;
-  //display: none;
-}
-
-.box input[id="numberSensitivity"] {
-  margin-top: 20px;
-}
-
-.box input[type="range"] {
-  -webkit-appearance: none;
-  margin-right: 15px;
-  width: 150px;
-  height: 7px;
-  background: #a1a4ad;
-  border-radius: 5px;
-  background-image: linear-gradient(#7f5feb, #7f5feb);
-  background-size: 70% 100%;
-  background-repeat: no-repeat;
-}
-
-.box input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #1d243d;
-  cursor: pointer;
-  box-shadow: 0 0 4px 0 #a1a4ad;
-}
-
-.box input[type=range]::-webkit-slider-runnable-track  {
-  -webkit-appearance: none;
-  box-shadow: none;
-  border: none;
-  background: transparent;
 }
 
 table {
@@ -150,8 +119,6 @@ table {
   max-width: 100%;
   margin: auto;
   margin-top:15px;
-  display: none;
-  margin-bottom: 20px;
 }
 
 table td, table th {
@@ -162,11 +129,11 @@ table td, table th {
 }
 
 table .fileNameColumn {
-  width: 35%;
+  width: 2%;
 }
 
-table .scoreColumn {
-  width: 15%;
+table .contentColumn {
+  width: 21%;
 }
 
 #noResults {
@@ -207,7 +174,7 @@ table .scoreColumn {
     position: relative;
     left: 0;
     bottom: 0;
-    top: 710px;
+    top: 575px;
     width: 100%;
     color: #a1a4ad;
     font-size: 14px;

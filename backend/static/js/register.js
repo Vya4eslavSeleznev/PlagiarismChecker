@@ -2,9 +2,9 @@
     function onSignUp(event) {
         event.preventDefault();
 
-        var name = document.getElementById("name").value;
-        var login = document.getElementById("login").value;
-        var password = document.getElementById("pwd").value;
+        let name = document.getElementById("name").value;
+        let login = document.getElementById("login").value;
+        let password = document.getElementById("pwd").value;
 
         if (isNotEmpty(name) && isNotEmpty(login) && isNotEmpty(password)) {
 

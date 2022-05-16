@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css')}}">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='js/utils.js')}}" defer></script>
     <script src="{{ url_for('static', filename='js/admin.js')}}" defer></script>
     <script src="{{ url_for('static', filename='js/particles.js')}}" defer></script>
 </head>
@@ -19,7 +20,7 @@
 
   <div class="dropdown">
     <div id="myDropdown" class="dropdown-content">
-      <a href="javascript:logOut();">Log Out</a>
+      <a href="#" onclick="logOut();">Log Out</a>
     </div>
   </div>
 

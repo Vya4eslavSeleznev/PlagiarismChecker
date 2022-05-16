@@ -1,38 +1,48 @@
-from flask import Flask, request, make_response, jsonify, render_template, url_for, redirect, session
-from sqlalchemy.exc import IntegrityError
-import bcrypt
+from datetime import timedelta
 from functools import wraps
 
-from db import database
-from file_parser import file_parser
-from engine import engine
-from auth.auth import Authentication
+import bcrypt
+from flask import Flask, request, make_response, jsonify, render_template, url_for, redirect
+from flask_jwt_extended import create_access_token, jwt_required, set_access_cookies, current_user, unset_jwt_cookies, \
+    JWTManager
+from sqlalchemy.exc import IntegrityError
 
+from db import database
+from engine import engine
+from file_parser import file_parser
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
+app.config["JWT_SECRET_KEY"] = "super-secret"
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+app.config["JWT_COOKIE_SECURE"] = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_ACCESS_COOKIE_NAME"] = "session_id"
 
-pars = "parser"
-postgres = "database"
-eng = "engine"
-key = "vDRif,gr!99A""N8*~3NY#*AkihiXQ&"
-DEFAULT_SESSION_COOKIE_NAME = "session_id"
+jwt = JWTManager(app)
+
+pars = 'parser'
+postgres = 'database'
+eng = 'engine'
+key = 'vDRif,gr!99A""N8*~3NY#*AkihiXQ&'
+DEFAULT_SESSION_COOKIE_NAME = 'session_id'
 
 
-def is_authenticated():
-    return DEFAULT_SESSION_COOKIE_NAME in request.cookies and \
-        request.cookies[DEFAULT_SESSION_COOKIE_NAME] == "123"
-
-
-def custom_login_required(function):
+def admin_only(function):
     @wraps(function)
     def decorator(*args, **kwargs):
-        if not is_authenticated():
-            return redirect(url_for('/'))
+        if current_user is not None and current_user.admin:
+            return function(*args, **kwargs)
 
-        session.is_authenticated = True
-        return function(*args, **kwargs)
+        return redirect(url_for('start_page'))
+
     return decorator
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return postgres.get_user_by_login(identity)
 
 
 def bad_request(element, message):
@@ -52,7 +62,7 @@ def initialization():
 
 
 @app.route("/get_results", methods=["POST"])
-#@custom_login_required
+@jwt_required()
 def get_results():
     file = request.files['file']
     number_of_results = request.form['number']
@@ -73,7 +83,7 @@ def get_results():
 
 
 @app.route("/insert_data", methods=["POST"])
-#@custom_login_required
+@jwt_required()
 def insert_data_into_db():
     file = request.files['file']
     bad_request(file, 'Missing file!')
@@ -87,14 +97,14 @@ def insert_data_into_db():
 
 
 @app.route("/delete_data", methods=["DELETE"])
-#@custom_login_required
+@jwt_required()
 def delete_data_from_db():
     postgres.delete_data()
     return make_response("OK", 200)
 
 
 @app.route("/get_data", methods=["GET"])
-#@custom_login_required
+@jwt_required()
 def get_data_from_db():
     all_data_from_db = postgres.get_all_data()
     list_to_return = postgres.result_to_dict(all_data_from_db)
@@ -149,11 +159,12 @@ def login():
             return 'User Not Found!', 404
 
         if bcrypt.checkpw(password.encode('utf-8'), customer.password.encode('utf8')):
-            response = make_response("OK", 200)
+            #response = make_response("OK", 200)
+            # value_if_true if condition else value_if_false
+            response = make_response(jsonify({"url": url_for('admin_page' if customer.admin else 'user_page')}), 200)
 
-            response.set_cookie(DEFAULT_SESSION_COOKIE_NAME,
-                                value="123",
-                                httponly=True)
+            access_token = create_access_token(identity=login)
+            set_access_cookies(response, access_token)
 
             return response
         else:
@@ -161,6 +172,13 @@ def login():
 
     else:
         return make_response("JSON not found", 400)
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    response = make_response("OK", 200)
+    unset_jwt_cookies(response)
+    return response
 
 
 @app.route("/")
@@ -174,10 +192,14 @@ def register_page():
 
 
 @app.route("/user")
+@jwt_required()
 def user_page():
+    test = current_user
     return render_template("user.html")
 
 
 @app.route("/admin")
+@jwt_required()
+@admin_only
 def admin_page():
     return render_template("admin.html")

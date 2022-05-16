@@ -1,14 +1,31 @@
 function myFunction(x) {
     x.classList.toggle("change");
+    const dropDown = document.getElementById("myDropdown");
     document.getElementById("myDropdown").classList.toggle("show");
 }
 
 function logOut() {
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': getCsrfTokenValue(),
+        },
+    })
+
     window.location = '/';
 }
 
 (() => {
+    async function logOut() {
+        await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': getCsrfTokenValue(),
+            },
+        })
 
+        window.location = '/';
+    }
 
     async function getData(event) {
         event.preventDefault();
@@ -49,7 +66,10 @@ function logOut() {
         event.preventDefault();
 
         await fetch('/delete_data', {
-            method: "DELETE"
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': getCsrfTokenValue(),
+            },
         })
 
         getData(event)
@@ -64,8 +84,11 @@ function logOut() {
         formData.append('file', fileInput.files[0]);
 
         await fetch('/insert_data', {
-            method: "POST",
-            body: formData
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': getCsrfTokenValue(),
+            },
         })
 
         getData(event)

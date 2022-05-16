@@ -2,14 +2,14 @@
     function onSignUp(event) {
         event.preventDefault();
 
-        let name = document.getElementById("name").value;
-        let login = document.getElementById("login").value;
-        let password = document.getElementById("pwd").value;
+        let name = document.getElementById('name').value;
+        let login = document.getElementById('login').value;
+        let password = document.getElementById('pwd').value;
 
         if (isNotEmpty(name) && isNotEmpty(login) && isNotEmpty(password)) {
 
             fetch('/register', {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -27,14 +27,14 @@
 })();
 
 function handleErrors(response) {
-    document.getElementById("validationMsg").style.display = "block";
+    document.getElementById('validationMsg').style.display = 'block';
 
     if (response.status === 400) {
-        document.getElementById("validationMsg").innerHTML = 'The user already exists';
-        document.getElementById("validationMsg").style.color = 'red';
+        document.getElementById('validationMsg').innerHTML = 'The user already exists';
+        document.getElementById('validationMsg').style.color = 'red';
     } else if (response.ok) {
-        document.getElementById("validationMsg").innerHTML = 'Successful';
-        document.getElementById("validationMsg").style.color = '#8BD17C';
+        document.getElementById('validationMsg').innerHTML = 'Successful';
+        document.getElementById('validationMsg').style.color = '#8BD17C';
     }
 
     return response;
@@ -42,8 +42,8 @@ function handleErrors(response) {
 
 function isNotEmpty(field) {
 
-    if (field.length == 0 || field == "") {
-        document.getElementById("validationMsg").style.display = "block";
+    if (field.length == 0 || field == '') {
+        document.getElementById('validationMsg').style.display = 'block';
         return false;
     } else {
         return true;
@@ -59,5 +59,5 @@ login.addEventListener('input', updateValue);
 password.addEventListener('input', updateValue);
 
 function updateValue(e) {
-    document.getElementById("validationMsg").style.display = "none"
+    document.getElementById('validationMsg').style.display = 'none'
 }

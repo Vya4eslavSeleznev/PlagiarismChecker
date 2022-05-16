@@ -1,12 +1,17 @@
 function myFunction(x) {
-  x.classList.toggle("change");
-
-  const dropDown = document.getElementById("myDropdown");
-
-  document.getElementById("myDropdown").classList.toggle("show");
+    x.classList.toggle("change");
+    const dropDown = document.getElementById("myDropdown");
+    document.getElementById("myDropdown").classList.toggle("show");
 }
 
 function logOut() {
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': getCsrfTokenValue(),
+        },
+    })
+
     window.location = '/';
 }
 
@@ -21,15 +26,20 @@ function logOut() {
         formData.append('file', fileInput.files[0]);
         formData.append('number', parseInt(number));
 
+        console.log(getCsrfTokenValue());
+
         const response = await fetch('/get_results', {
-            method: "POST",
-            body: formData
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': getCsrfTokenValue(),
+            },
         });
 
         const result = await response.json();
 
         const tbody = document.getElementById('resultsTableBody');
-        tbody.innerHTML = "";
+        tbody.innerHTML = '';
 
         for(let res of result) {
             const tr = document.createElement('tr');

@@ -3,13 +3,13 @@
     function onSignIn(event) {
         event.preventDefault();
 
-        let login = document.getElementById("login").value;
-        let password = document.getElementById("pwd").value;
+        let login = document.getElementById('login').value;
+        let password = document.getElementById('pwd').value;
 
         if (isNotEmpty(login) && isNotEmpty(password)) {
 
             fetch('/login', {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -25,17 +25,20 @@
     button.addEventListener('click', onSignIn);
 })();
 
-function handleErrors(response) {
-    document.getElementById("validationMsg").style.display = "block";
+async function handleErrors(response) {
+    document.getElementById('validationMsg').style.display = 'block';
 
     if (response.status === 404) {
-        document.getElementById("validationMsg").innerHTML = 'The user does not exist';
-        document.getElementById("validationMsg").style.color = 'red';
+        document.getElementById('validationMsg').innerHTML = 'The user does not exist';
+        document.getElementById('validationMsg').style.color = 'red';
     } else if (response.status === 400) {
-        document.getElementById("validationMsg").innerHTML = 'Incorrect login or password';
-        document.getElementById("validationMsg").style.color = 'red';
+        document.getElementById('validationMsg').innerHTML = 'Incorrect login or password';
+        document.getElementById('validationMsg').style.color = 'red';
     } else if (response.ok) {
-        window.location = '/user';
+        document.getElementById('validationMsg').style.display = 'none';
+
+        const result = await response.json();
+        window.location = result.url;
     }
 
     return response;
@@ -43,8 +46,8 @@ function handleErrors(response) {
 
 function isNotEmpty(field) {
 
-    if (field.length == 0 || field == "") {
-        document.getElementById("validationMsg").style.display = "block";
+    if (field.length == 0 || field == '') {
+        document.getElementById('validationMsg').style.display = 'block';
         return false;
     } else {
         return true;

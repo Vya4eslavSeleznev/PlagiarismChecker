@@ -89,7 +89,7 @@ function logOut() {
             headers: {
                 'X-CSRF-TOKEN': getCsrfTokenValue(),
             },
-        })
+        }).then(handleErrors)
 
         getData(event)
     }
@@ -105,3 +105,15 @@ function logOut() {
     });
 
 })();
+
+function handleErrors(response) {
+    document.getElementById('validationMsg').style.display = 'block';
+
+    if (response.status === 400) {
+        document.getElementById('validationMsg').style.color = 'red';
+    } else if (response.ok) {
+        document.getElementById('validationMsg').style.display = 'none';
+    }
+
+    return response;
+}

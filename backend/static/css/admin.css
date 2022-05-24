@@ -224,3 +224,12 @@ table .contentColumn {
 }
 
 .show {display: block;}
+
+.validation-message {
+  color: red;
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translate(-50%, -5%);
+  display: none;
+}

@@ -34,7 +34,7 @@ function logOut() {
             headers: {
                 'X-CSRF-TOKEN': getCsrfTokenValue(),
             },
-        });
+        }).then(handleErrors)
 
         const result = await response.json();
 
@@ -96,3 +96,19 @@ rangeInputs.forEach(input => {
 })
 
 document.getElementById('numberSensitivity').addEventListener('input', handleNumOfResultsInputChange)
+
+function handleErrors(response) {
+    document.getElementById('validationMsg').style.display = 'block';
+
+    if (response.status === 400) {
+        document.getElementById('validationMsg').style.color = 'red';
+    } else if (response.ok) {
+        document.getElementById('validationMsg').style.display = 'none';
+    } else if (response.status === 404) {
+    document.getElementById('validationMsg').style.display = 'block';
+        document.getElementById('validationMsg').innerHTML = 'No content';
+        document.getElementById('validationMsg').style.color = 'orange';
+    }
+
+    return response;
+}

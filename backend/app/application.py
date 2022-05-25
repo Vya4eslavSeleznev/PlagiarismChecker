@@ -1,6 +1,6 @@
 from datetime import timedelta
 from functools import wraps
-
+import re
 import bcrypt
 from flask import Flask, request, make_response, jsonify, render_template, url_for, redirect
 from flask_jwt_extended import create_access_token, jwt_required, set_access_cookies, current_user, unset_jwt_cookies, \
@@ -61,6 +61,15 @@ def initialization():
     eng = engine.Engine()
 
 
+def is_english(s):
+    try:
+        s.encode(encoding='utf-8').decode('ascii')
+    except UnicodeDecodeError:
+        return False
+    else:
+        return True
+
+
 @app.route('/get_results', methods=['POST'])
 @jwt_required()
 def get_results():
@@ -75,9 +84,9 @@ def get_results():
     if number_of_rows == 0:
         return make_response(jsonify([]), 404)
 
-    if file.filename.endswith(('.doc', '.docx')):
-        text_to_check = pars.get_data(file)
+    text_to_check = pars.get_data(file)
 
+    if is_english(text_to_check):
         all_data_from_db = postgres.get_all_data()
         all_sentences = postgres.get_all_sentences(all_data_from_db)
 
@@ -87,7 +96,7 @@ def get_results():
 
         return make_response(jsonify(result), 200)
 
-    return make_response('Check the file extension', 400)
+    return make_response('Check the file extension or data', 400)
 
 
 @app.route('/insert_data', methods=['POST'])
@@ -153,7 +162,7 @@ def register():
 def login():
     if request.is_json:
 
-        #if (request.cookies.get())
+        # if (request.cookies.get())
 
         req = request.get_json()
 
@@ -169,7 +178,7 @@ def login():
             return 'User Not Found!', 404
 
         if bcrypt.checkpw(password.encode('utf-8'), customer.password.encode('utf8')):
-            #response = make_response("OK", 200)
+            # response = make_response("OK", 200)
             # value_if_true if condition else value_if_false
             response = make_response(jsonify({"url": url_for('admin_page' if customer.admin else 'user_page')}), 200)
 

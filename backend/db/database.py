@@ -21,15 +21,18 @@ class Database:
         self.db.session.commit()
 
     def delete_data(self):
-        models.Base.metadata.drop_all(self.engine)
-        models.Base.metadata.create_all(self.engine)
+        # models.Base.metadata.drop_all(self.engine)
+        # models.Base.metadata.create_all(self.engine)
+        # models.Data.query.delete()
+        self.db.session.query(models.Data).delete()
+        self.db.session.commit()
 
     def get_all_data(self):
         result = self.db.session.query(models.Data).all()
         return result
 
     def add_user(self, name, login, password):
-        customer = models.Customer(name, login, password)
+        customer = models.Customer(name, login, password, False)
         self.db.session.add(customer)
         self.db.session.commit()
 
@@ -38,6 +41,9 @@ class Database:
 
     def rollback(self):
         self.db.session.rollback()
+
+    def count_rows(self):
+        return self.db.session.query(models.Data.content).count()
 
     @staticmethod
     def get_all_sentences(result_data):

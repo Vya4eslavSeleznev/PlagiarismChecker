@@ -4,12 +4,12 @@ import os
 
 class Parser:
 
-    def get_data(self, url):
-        doc = Document(url)
+    def get_data(self, file):
+        doc = Document(file)
         content = self.__merge_paragraphs(doc)
-        name = self.__get_file_name(url)
+        # name = self.__get_file_name(url)
 
-        return content, name
+        return content #, name
 
     def __merge_paragraphs(self, doc):
         text = ""

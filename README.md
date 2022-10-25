@@ -1,98 +1,58 @@
-# Application for interacting with a recording studio
+# Приложение по поиску пдагиата с использованием PostgreSQL
 
 ---
 
-![Gif](https://github.com/Vya4eslavSeleznev/MusicalRoom2/blob/master/docs/musicalRoom.gif)
+![Gif](https://github.com/Vya4eslavSeleznev/PlagiarismChecker/blob/master/docs/plagiarismChecker.gif)
 
 ---
 
-The main purpose of this application is to enable the client to book a music hall. There are several roles: client and administrator. The administrator can easily apply the customer's booking and add various music instruments and rooms.
+Данный проект представляет собой клиент-серверное приложение, которое общается по протоколу HTTPS. Сервис реализован при помощь веб-фреймворка flask.  
+Серверная часть приложения состоит из нескольких модулей: обработка файла, загрузка в базу данных и передача содержимого классу Engine. Добавить данные в базу PostgreSQL можно при помощи файла .docx. Извлекается содержимое из документа и вставляется в БД.  
+Клиентская же часть имеет в своем составе следующие страницы: авторизация, регистрация, аккаунты для администратора и пользователя. Более того, все было развернуто с использованием связки — двух серверов Nginx и Gunicorn. Как приложение, так и серверы были контейнеризированы при помощи Docker для того, чтобы использовать все локально на компьютере.  
 
-### Database:
-
-![DB](/docs/db.png)
-
-The main table in the schema is Reservation, which stores all user reservations. It is connected to the Customer table by a many-to-one relationship. User data is stored in encrypted form. Reservation is also connected by a many-to-one relationship with the Room table in which the available rooms are stored. The Room table is connected by a many-to-many relationship with the Instrument table.  
-The web server was developed using Java Spring.
+![Project](/docs/project.png)
 
 ---
 
-### Model-View-Presenter:
+### Backend
 
-![MVP](/docs/mvp.png)
+###### Engine
+Сердцем проекта является класс Engine. Именно данный модуль осуществляет всю сложную работу — поиск заимствований. Основными инструментами, благодаря которым осуществляется все работа, являются BERT и FAISS. Рекомендованное использование нейронной сети BERT — дообучение на конкретной задаче. Однако решение, должно быть способно работать в большинстве предметных областях. Из этого следует, что необходимо выбрать универсальный вариант. В связи с этим была использована предобученная модель на корпусе текстов Википедии, которая способна распознавать 104 языка. Все это позволяет распознавать не только слова, но и смысл предложений. Чтобы эффективно работать с большим объемом данных используется FAISS. Как происходит формирование результатов?  
+За итоговые показатели по заимствованию отвечает блок «Формирование результатов». В момент, когда FAISS выполнил свою задачу, он возвращает номера самых похожих элементов. Количество результатов задает сам пользователь. Также стоит отметить, что все элементы, в том числе полученные, закодированы.  
+Теперь стадия расчета плагиата: для этого была использована метрика косинуса. Используется два вектора: входящий, который пользователь отправляет на проверку, и вектор, который выдала библиотека FAISS. После этого вычисляется косинус угла между ними, полученное значение меньше единицы. Результат умножается на 100 и получается процент заимствований. Например, косинус 90 градусов равен 0. Это означает, что два вектора имеют нулевую схожесть.  
 
-The MVP design pattern was used. Moreover, Java was used, as well as a Retrofit  framework  for interacting with the server.
+![Engine](/docs/engine.png)
 
----
+Класс Parser необходим для обработки входных документов с разрешением .docx. Разработанный алгоритм позволяет на выходе получать единый текст, без символов новой строки, красной строки — знаков табуляции. Более того, в финальный результат не попадают картинки и таблицы. По итогу подготовленные параграфы объединяются в один. После таких манипуляций текст будет готов к кодированию. В качестве библиотеки на языке Python была выбрана «docx», так как в ней есть все доступные методы, позволяющие реализовать парсер файлов.
 
-### Login page:
-
-![Login page](/docs/startWindow.png)
-
-### User account:
-
-- After successful authorization in the system, the user is greeted by the main page:
-
-![Main page](/docs/userHome.png)
-
-- On the next tab, which is called "Equipment", the user can view the rooms. You can also click on them and see the instruments that are in the music room:
-
-![Equipment page1](/docs/userEquipment.png)
-
-![Equipment page2](/docs/instrumentInRoom.png)
-
-- On the next tab, which is called "Profile", the user can view and edit their personal data. In addition, it is possible to view the booked rooms:
-
-![Profile page1](/docs/userProfile.png)
-
-![Profile page2](/docs/userReservations.png)
-
-- On the last tab, which is called "Reserve", the user can reserve a music room:
-
-![Reserve page1](/docs/userReserve.png)
-
-![Reserve page2](/docs/userReserve2.png)
+![Parser](/docs/parser.png)
 
 ---
 
-### Administrator account:
+### Frontend
 
-- On the first tab of the administrator there is an opportunity to confirm or reject the booked rooms:
+В роли инструмента для разработки фронтэнда был выбран Vanilla JavaScript. Это обычный JavaScript без каких-либо дополнительных библиотек или фреймворков. Vanilla JS не нуждается в каких-то внешних ресурсах, поэтому выполнение кода Vanilla JS происходит на стороне клиента, что делает его скорость превосходной. Еще одним достоинством для разработчиков является тот факт, что Vanilla JS это довольно простой инструмент для разработки. Помогает лучше познать основы JS, чтобы иметь возможность быстрее освоить использование новых фреймворков.  
+В приложении по распознаванию плагиата фон был сделан динамическим, благодаря Particles.js. Это библиотека JavaScript, которая создает большие наборы различных частиц, состоящих из точек и отрезков. Как правило, они движутся, а также соединены и образуют полигоны. Более того, пользователь может с ними взаимодействовать с использованием мыши компьютера. Появление курсора вне области, которая предназначена для ввода и использования информации, разгоняет частицы и очищает их на заднем фоне. Чтобы воспользоваться данной функцией, необходимо обратиться к функции JS — particlesJS. В нее необходимо поместить конфигурационный объект в формате JSON, который и будет описывать поведение частиц.  
 
-![Confirmation page](/docs/adminConfirmation.png)
+- При запуске приложения пользователь попадает на главную страницу авторизации. Предоставляется возможность идентифицироваться — ввести свою информацию: логин и пароль. После этого можно нажать на кнопку «Sign in» и загрузится профиль клиента:
 
-- On the tab which is called "Room" you can add or view all available rooms:
+![Auth](/docs/auth.png)
 
-![Room page1](/docs/adminRoom.png)
+- Страница регистрации создавалось с целью добавления нового пользователя в таблицу «Customer». Для этого нужно ввести в три текстовые поля свои персональные данные: имя, логин и пароль:
 
-![Room page2](/docs/adminAllRooms.png)
+![Reg](/docs/reg.png)
 
-- You can do the same with the instruments:
+- При успешном входе в систему пользователь видит свой аккаунт. Сперва ему доступно: выбор файла с расширением .docx — кнопка «Choose File», подбор числа результатов с помощью ползунка (значение может варьироваться от 1 до 10):
 
-![Instrument page1](/docs/adminInstrument.png)
+![User acc1](/docs/userAcc1.png)
 
-![Instrument page2](/docs/adminAllInstruments.png)
+- После того, как все действия выполнены успешно клиент нажимает на кнопку «Submit» и появляется таблица с результатами. В ней расположены две колонки: название файла и рассчитанный результат:
 
-- On the last page you can add some instruments to the rooms. And also view all the instruments in the rooms:
+![User acc2](/docs/userAcc2.png)
 
-![RoomsInstrument page1](/docs/adminRoomsInstrument.png)
+- При входе в систему под ролью администратора, сразу же загружается таблица из PostgreSQL с полями: название файла и его содержание:
 
-![RoomsInstrument page2](/docs/adminEquipment.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![Admin acc1](/docs/adminAcc2.png)
 
 
 
